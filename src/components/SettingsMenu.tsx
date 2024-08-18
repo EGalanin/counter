@@ -7,10 +7,10 @@ type SettingsMenuType = {
     startValue: number
     hasError: boolean
     setHasError: (value: boolean) => void
-    // changeMaxValue: (value: string) => void
-    // changeStartValue: (value: string) => void
+    changeMaxValue: (value: number) => void
+    changeStartValue: (value: number) => void
     disabledButton: () => void
-    settingsHandler: (startValue: number, maxValue: number) => void
+    // disabled: boolean
 }
 
 export const SettingsMenu = ({
@@ -18,35 +18,33 @@ export const SettingsMenu = ({
                                  startValue,
                                  hasError,
                                  setHasError,
-                                 // changeMaxValue,
-                                 // changeStartValue,
+                                 changeMaxValue,
+                                 changeStartValue,
                                  disabledButton,
-                                 settingsHandler
+                                 // disabled
                              }: SettingsMenuType) => {
 
-    const [startValue_, setStartValue] = useState(startValue)
-    const [maxValue_, setMaxValue] = useState(maxValue)
-
     const onChangeMaxValueHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        if (+e.currentTarget.value < 0) { //|| maxValue_ <= startValue_
+        if (+e.currentTarget.value < 0) { //|| maxValue <= startValue
             setHasError(true);
             return;
         }
-        setMaxValue(+e.currentTarget.value)
+        changeMaxValue(+e.currentTarget.value)
         setHasError(false);
     }
 
     const onChangeStartValueHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        if (+e.currentTarget.value < 0 || startValue_ >= maxValue_) {
+        if (+e.currentTarget.value < 0 || startValue >= maxValue) {
             setHasError(true);
             return
         }
-        setStartValue(+e.currentTarget.value)
+        changeStartValue(+e.currentTarget.value)
         setHasError(false);
     }
 
     const onSetHandler = () => {
-        settingsHandler(startValue_, maxValue_)
+        // onChangeMaxValueHandler
+        // onChangeStartValueHandler
         disabledButton()
     }
 
@@ -57,14 +55,14 @@ export const SettingsMenu = ({
                     <FieldLabel>
                         max value:
                         <Field type={'number'}
-                               value={maxValue_}
+                               value={maxValue}
                                hasError={hasError}
                                onChange={onChangeMaxValueHandler}/>
                     </FieldLabel>
                     <FieldLabel>
                         start value:
                         <Field type={'number'}
-                               value={startValue_}
+                               value={startValue}
                                hasError={hasError}
                                onChange={onChangeStartValueHandler
                         }/>
