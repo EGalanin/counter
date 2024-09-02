@@ -2,15 +2,17 @@ import React, {ChangeEvent, useState} from 'react';
 import styled from 'styled-components';
 import {Button} from './Button';
 
-type SettingsMenuType = {
+export type SettingsMenuType = {
     maxValue: number
     startValue: number
     hasError: boolean
     setHasError: (value: boolean) => void
     changeMaxValue: (value: number) => void
     changeStartValue: (value: number) => void
-    disabledButton: () => void
-    // disabled: boolean
+    disabled: boolean
+    setDisabled: (value: boolean) => void
+    setCounterValue: (startValue: number, maxValue: number) => void
+    isConditionalRenderingClick?: () => void
 }
 
 export const SettingsMenu = ({
@@ -20,21 +22,22 @@ export const SettingsMenu = ({
                                  setHasError,
                                  changeMaxValue,
                                  changeStartValue,
-                                 disabledButton,
-                                 // disabled
+                                 disabled,
+                                 setDisabled,
+                                 setCounterValue,
+                                 isConditionalRenderingClick
                              }: SettingsMenuType) => {
 
+    const regex = /^\d*$/;
+
     const onChangeMaxValueHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        if (+e.currentTarget.value < 0) { //|| maxValue <= startValue
-            setHasError(true);
-            return;
-        }
+        setHasError(+e.currentTarget.value < 0 || maxValue <= startValue || !regex.test(e.currentTarget.value));
         changeMaxValue(+e.currentTarget.value)
-        setHasError(false);
+
     }
 
     const onChangeStartValueHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        if (+e.currentTarget.value < 0 || startValue >= maxValue) {
+        if (+e.currentTarget.value < 0 || startValue >= maxValue || !regex.test(e.currentTarget.value)) {
             setHasError(true);
             return
         }
@@ -43,10 +46,16 @@ export const SettingsMenu = ({
     }
 
     const onSetHandler = () => {
-        // onChangeMaxValueHandler
-        // onChangeStartValueHandler
-        disabledButton()
+        setCounterValue(startValue, maxValue)
+        setDisabled(true)
+        click()
     }
+
+    const click = () => {
+        isConditionalRenderingClick?.()
+        // callBack?.()
+    }
+    // const styleCollapc = collapc || unCollapc ? {display: 'none'} : {}
 
     return (
         <StyledSettingsMenu>
@@ -65,7 +74,7 @@ export const SettingsMenu = ({
                                value={startValue}
                                hasError={hasError}
                                onChange={onChangeStartValueHandler
-                        }/>
+                               }/>
                     </FieldLabel>
                 </StyledForm>
 
@@ -74,7 +83,7 @@ export const SettingsMenu = ({
                 <Button
                     name={'set'}
                     onClick={onSetHandler}
-                    disabled={false}/>
+                    disabled={disabled}/>
             </ButtonBlock>
         </StyledSettingsMenu>
     );
@@ -129,7 +138,7 @@ const FieldLabel = styled.label`
   //justify-content: space-around;
 `
 
-const Field = styled.input<{hasError: boolean}>`
+const Field = styled.input<{ hasError: boolean }>`
   text-align: center;
   border: 1px solid ${props => props.hasError ? 'red' : '#6464ce'};
   background-color: ${props => props.hasError ? '#ffe6e6' : 'white'};

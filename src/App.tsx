@@ -1,21 +1,20 @@
-import React, {ChangeEvent, useEffect, useState} from 'react';
-
+import React, {useEffect, useState} from 'react';
 import './App.css';
-import {SettingsMenu} from './components/SettingsMenu';
-import {Counter} from './components/Counter';
 import styled from 'styled-components';
+import {StaticRenderCounter} from './components/StaticRenderCounter';
+import {ConditionalRenderCounter} from './components/ConditionalRenderCounter';
+
 
 function App() {
-    let [maxValue, setMaxValue] = useState<number>(0);
-    let [startValue, setStartValue] = useState<number>(0);
+    const [maxValue, setMaxValue] = useState<number>(0);
+    const [startValue, setStartValue] = useState<number>(0);
 
-    let [startValueCounter, setStartValueCounter] = useState(0);
-    let [maxValueCounter, setMaxValueCounter] = useState(0);
-    let [count, setCount] = useState(startValueCounter);
+    const [startValueCounter, setStartValueCounter] = useState<number>(0);
+    const [maxValueCounter, setMaxValueCounter] = useState<number>(0);
+    const [count, setCount] = useState<number>(0);
+    const [hasError, setHasError] = useState<boolean>(false);
 
-    let [hasError, setHasError] = useState<boolean>(false);
-
-    // let disabled = true
+    const [disabled, setDisabled] = useState<boolean>(false)
 
     useEffect(() => {
         let maxValueString = localStorage.getItem('maxValue')
@@ -30,57 +29,66 @@ function App() {
             let newStartValue = JSON.parse(startValueString)
             setStartValue(+newStartValue)
         }
-    } , [])
+    }, [])
 
+    useEffect(() => {
+        localStorage.setItem('maxValue', JSON.stringify(maxValue))
+    }, [maxValue])
+
+    useEffect(() => {
+        localStorage.setItem('startValue', JSON.stringify(startValue))
+    }, [startValue])
 
     const changeMaxValue = (value: number) => {
         setMaxValue(value)
-        localStorage.setItem('maxValue', JSON.stringify(maxValue))
     }
 
     const changeStartValue = (value: number) => {
         setStartValue(value)
-        localStorage.setItem('startValue', JSON.stringify(startValue))
-        setCount(value)
     }
 
-    const disabledButton = () => {
-        setMaxValueCounter(maxValue);
+    const setCounterValue = (startValue: number, maxValue: number) => {
         setStartValueCounter(startValue);
-        // disabled = true
+        setMaxValueCounter(maxValue);
+        setCount(startValue)
     }
 
     return (
-        <CounterWrapper>
-            <SettingsMenu
-                maxValue={maxValue}
-                startValue={startValue}
-                hasError={hasError}
-                changeMaxValue={changeMaxValue}
-                changeStartValue={changeStartValue}
-                setHasError={setHasError}
-                disabledButton={disabledButton}
-                // disabled={disabled}
-            />
-            <Counter
-                maxValue={maxValueCounter}
-                startValue={startValueCounter}
+        <>
+            <StaticRenderCounter
+                maxValueCounter={maxValueCounter}
+                startValueCounter={startValueCounter}
                 count={count}
                 setCount={setCount}
                 hasError={hasError}
+                setDisabled={setDisabled}
+                maxValue={maxValue}
+                startValue={startValue}
+                setHasError={setHasError}
+                changeMaxValue={changeMaxValue}
+                changeStartValue={changeStartValue}
+                disabled={disabled}
+                setCounterValue={setCounterValue}
             />
-        </CounterWrapper>
-    );
+
+            <ConditionalRenderCounter
+                maxValueCounter={maxValueCounter}
+                startValueCounter={startValueCounter}
+                count={count}
+                setCount={setCount}
+                hasError={hasError}
+                setDisabled={setDisabled}
+                maxValue={maxValue}
+                startValue={startValue}
+                setHasError={setHasError}
+                changeMaxValue={changeMaxValue}
+                changeStartValue={changeStartValue}
+                disabled={disabled}
+                setCounterValue={setCounterValue}
+            />
+        </>
+    )
 }
 
 export default App;
 
-const CounterWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 30px;
-  width: 100%;
-  height: 100vh;
-`

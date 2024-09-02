@@ -1,26 +1,42 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import {Button} from './Button';
 
-type CounterType = {
-    maxValue: number
-    startValue: number
-    count:number
-    setCount: (count:number)=> void
+export type CounterType = {
+    maxValueCounter: number
+    startValueCounter: number
+    count: number
+    setCount: (count: number) => void
     hasError: boolean
+    setDisabled: (value: boolean) => void
+    onClick?: () => void
 }
 
-export const Counter = ({maxValue, startValue, count, setCount, hasError}: CounterType) => {
+export const Counter = ({
+                            maxValueCounter,
+                            startValueCounter,
+                            count,
+                            setCount,
+                            hasError,
+                            setDisabled,
+                            onClick
+                        }: CounterType) => {
 
-    const disabled = count === maxValue
+    const disabled = count === maxValueCounter
 
     const onClickIncHandler = () => {
         setCount(count++);
     }
 
     const onClickResetHandler = () => {
-        setCount(startValue)
+        setCount(startValueCounter);
+        setDisabled(false);
+        setCount(0);
+        onClick?.();
     }
+
+    // setCollapc && setCollapc(false)
+    //collapc && !unCollapc ? {} : {display: 'none'}
 
     return (
         <StyledCounter>
