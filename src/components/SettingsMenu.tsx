@@ -1,61 +1,64 @@
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent} from 'react';
 import styled from 'styled-components';
 import {Button} from './Button';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+    setCountAC,
+    setDisabledAC,
+    setHasErrorAC,
+    setMaxValueAC,
+    setMaxValueCounterAC,
+    setStartValueAC,
+    setStartValueCounterAC
+} from '../redax/stateReduser';
+import {RootState} from '../redax/store';
 
 export type SettingsMenuType = {
-    maxValue: number
-    startValue: number
     hasError: boolean
-    setHasError: (value: boolean) => void
-    changeMaxValue: (value: number) => void
-    changeStartValue: (value: number) => void
     disabled: boolean
-    setDisabled: (value: boolean) => void
-    setCounterValue: (startValue: number, maxValue: number) => void
     isConditionalRenderingClick?: () => void
 }
 
 export const SettingsMenu = ({
-                                 maxValue,
-                                 startValue,
                                  hasError,
-                                 setHasError,
-                                 changeMaxValue,
-                                 changeStartValue,
                                  disabled,
-                                 setDisabled,
-                                 setCounterValue,
                                  isConditionalRenderingClick
                              }: SettingsMenuType) => {
 
+
     const regex = /^\d*$/;
+    const dispatch = useDispatch()
+    const maxValue = useSelector<RootState, number>(state => state.state?.maxValue)
+    const startValue = useSelector<RootState, number>(state => state.state?.startValue)
+
 
     const onChangeMaxValueHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        setHasError(+e.currentTarget.value < 0 || maxValue <= startValue || !regex.test(e.currentTarget.value));
-        changeMaxValue(+e.currentTarget.value)
-
+        dispatch(setHasErrorAC(+e.currentTarget.value < 0 || maxValue <= startValue || !regex.test(e.currentTarget.value)));
+        dispatch(setMaxValueAC(+e.currentTarget.value))
+        // dispatch(MaxValueTC(+e.currentTarget.value))  //перенес в store
     }
 
     const onChangeStartValueHandler = (e: ChangeEvent<HTMLInputElement>) => {
         if (+e.currentTarget.value < 0 || startValue >= maxValue || !regex.test(e.currentTarget.value)) {
-            setHasError(true);
+            dispatch(setHasErrorAC(true));
             return
         }
-        changeStartValue(+e.currentTarget.value)
-        setHasError(false);
+        dispatch(setStartValueAC(+e.currentTarget.value))
+        dispatch(setHasErrorAC(false));
+        // dispatch(StartValueTC(+e.currentTarget.value))  //перенес в store
     }
 
     const onSetHandler = () => {
-        setCounterValue(startValue, maxValue)
-        setDisabled(true)
+        dispatch(setStartValueCounterAC(startValue));
+        dispatch(setMaxValueCounterAC(maxValue));
+        dispatch(setCountAC(startValue))
+        dispatch(setDisabledAC(true));
         click()
     }
 
     const click = () => {
         isConditionalRenderingClick?.()
-        // callBack?.()
     }
-    // const styleCollapc = collapc || unCollapc ? {display: 'none'} : {}
 
     return (
         <StyledSettingsMenu>

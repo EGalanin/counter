@@ -2,45 +2,22 @@ import {Counter, CounterType} from './Counter';
 import {SettingsMenu, SettingsMenuType} from './SettingsMenu';
 import React from 'react';
 import styled from 'styled-components';
+import {RootState} from '../redax/store';
+import {useSelector} from 'react-redux';
 
-type StaticRenderCounterType = CounterType & SettingsMenuType;
+export const StaticRenderCounter = () => {
 
-export const StaticRenderCounter = ({
-                                        maxValue,
-                                        startValue,
-                                        hasError,
-                                        changeMaxValue,
-                                        changeStartValue,
-                                        setHasError,
-                                        disabled,
-                                        setDisabled,
-                                        setCounterValue,
-                                        maxValueCounter,
-                                        startValueCounter,
-                                        count,
-                                        setCount
-                                    }: StaticRenderCounterType) => {
+    const hasError = useSelector<RootState, boolean>(state => state.state?.hasError)
+    const disabled = useSelector<RootState, boolean>(state => state.state?.disabled)
 
     return (
         <CounterWrapper >
             <SettingsMenu
-                maxValue={maxValue}
-                startValue={startValue}
                 hasError={hasError}
-                changeMaxValue={changeMaxValue}
-                changeStartValue={changeStartValue}
-                setHasError={setHasError}
                 disabled={disabled}
-                setDisabled={setDisabled}
-                setCounterValue={setCounterValue}
             />
             <Counter
-                maxValueCounter={maxValueCounter}
-                startValueCounter={startValueCounter}
-                count={count}
-                setCount={setCount}
                 hasError={hasError}
-                setDisabled={setDisabled}
             />
         </CounterWrapper>)
 }

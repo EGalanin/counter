@@ -1,42 +1,37 @@
 import React from 'react';
 import styled from 'styled-components';
 import {Button} from './Button';
+import {useDispatch, useSelector} from 'react-redux';
+import {setCountAC, setDisabledAC} from '../redax/stateReduser';
+import {RootState} from '../redax/store';
 
 export type CounterType = {
-    maxValueCounter: number
-    startValueCounter: number
-    count: number
-    setCount: (count: number) => void
     hasError: boolean
-    setDisabled: (value: boolean) => void
     onClick?: () => void
 }
 
 export const Counter = ({
-                            maxValueCounter,
-                            startValueCounter,
-                            count,
-                            setCount,
                             hasError,
-                            setDisabled,
                             onClick
                         }: CounterType) => {
+
+    const startValueCounter = useSelector<RootState, number>(state => state.state?.startValueCounter)
+    const maxValueCounter = useSelector<RootState, number>(state => state.state?.maxValueCounter)
+    const count = useSelector<RootState, number>(state => state.state?.count)
+    const dispatch = useDispatch()
 
     const disabled = count === maxValueCounter
 
     const onClickIncHandler = () => {
-        setCount(count++);
+        const newValue = count + 1
+        dispatch(setCountAC(newValue));
     }
 
     const onClickResetHandler = () => {
-        setCount(startValueCounter);
-        setDisabled(false);
-        setCount(0);
+        dispatch(setCountAC(startValueCounter));
+        dispatch(setDisabledAC(false));
         onClick?.();
     }
-
-    // setCollapc && setCollapc(false)
-    //collapc && !unCollapc ? {} : {display: 'none'}
 
     return (
         <StyledCounter>
